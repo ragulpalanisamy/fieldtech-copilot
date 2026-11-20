@@ -30,7 +30,7 @@ jobs:
 
       - name: Create stub .env.local for doctor
         run: |
-          printf 'NEXT_PUBLIC_AGORA_APP_ID=0123456789abcdef0123456789abcdef\nNEXT_AGORA_APP_CERTIFICATE=fedcba9876543210fedcba9876543210\n' > .env.local
+          printf 'NEXT_PUBLIC_AGORA_APP_ID=0123456789abcdef0123456789abcdef\nNEXT_AGORA_APP_CERTIFICATE=fedcba9876543210fedcba9876543210\nNEXT_AGORA_CUSTOMER_ID=mock_customer_id\nNEXT_AGORA_CUSTOMER_SECRET=mock_customer_secret\nAPP_PUBLIC_URL=https://mock.ngrok.app\nMURF_API_KEY=mock_murf_key\nMURF_VOICE_ID=Matthew\nMURF_MODEL=FALCON\nMURF_LOCALE=en-US\nLLM_API_URL=https://api.openai.com/v1/chat/completions\nLLM_API_KEY=mock_llm_key\nLLM_MODEL=gpt-4o-mini\nCUSTOM_LLM_AUTH_TOKEN=fieldtech-secret-token\n' > .env.local
 
       - name: Verify (lint + typecheck + api-contracts + build)
         run: pnpm run verify
