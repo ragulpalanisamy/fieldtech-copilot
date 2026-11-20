@@ -1,0 +1,26 @@
+# CODEOWNERS — FieldTech Copilot
+# GitHub uses this file to auto-assign reviewers on PRs.
+# Syntax: <pattern> <owner>
+# Docs: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @ragulpalanisamy
+
+# Frozen Agora core files — always require owner review before any PR touching these
+app/api/generate-agora-token/ @ragulpalanisamy
+app/api/stop-conversation/    @ragulpalanisamy
+components/ConversationComponent.tsx @ragulpalanisamy
+lib/agora.ts                  @ragulpalanisamy
+
+# FieldTech custom layers
+lib/field-store.ts            @ragulpalanisamy
+lib/agent-tools.ts            @ragulpalanisamy
+lib/field-tech-prompt.ts      @ragulpalanisamy
+app/api/chat/                 @ragulpalanisamy
+app/api/field-state/          @ragulpalanisamy
+components/FieldOperationsConsole.tsx @ragulpalanisamy
+
+# Docs & specs
+docs/                         @ragulpalanisamy
+AGENTS.md                     @ragulpalanisamy
+REQUIREMENTS.md               @ragulpalanisamy
