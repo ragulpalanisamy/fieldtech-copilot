@@ -190,3 +190,59 @@ CUSTOM_LLM_AUTH_TOKEN=fieldtech-secret-token
 - ❌ Multiple LLM providers — single OpenAI-compatible endpoint is enough
 - ❌ CI/CD — just push to GitHub main
 - ❌ Tests — `pnpm run typecheck` is the only test gate
+
+---
+
+# Agora Base Technical Guidelines
+
+## StrictMode Guard (`isReady`)
+
+Both `useJoin` and `useLocalMicrophoneTrack` are gated by `isReady` to prevent double initialization in React StrictMode dev mode. The cleanup fires synchronously before any `setTimeout`, so only the real second mount's timer fires.
+
+```tsx
+const [isReady, setIsReady] = useState(false);
+useEffect(() => {
+  let cancelled = false;
+  const id = setTimeout(() => {
+    if (!cancelled) setIsReady(true);
+  }, 0);
+  return () => {
+    cancelled = true;
+    clearTimeout(id);
+    setIsReady(false);
+  };
+}, []);
+const { isConnected: joinSuccess } = useJoin(config, isReady);
+const { localMicrophoneTrack } = useLocalMicrophoneTrack(isReady);
+```
+
+## Hook Ownership
+
+- `useJoin` owns `client.leave()`; never call it manually.
+- `useLocalMicrophoneTrack` owns track lifecycle; do not manually call `.close()`.
+- `usePublish` owns publish state; mute with `track.setEnabled()` and do not manually unpublish.
+
+## AgoraVoiceAI Init
+
+Initialize `AgoraVoiceAI` from `agora-agent-client-toolkit` inside `ConversationComponent`, gated on `isReady && joinSuccess`.
+
+```tsx
+useEffect(() => {
+  if (!isReady || !joinSuccess) return;
+  // AgoraVoiceAI.init() is called here exactly once.
+}, [isReady, joinSuccess]);
+```
+
+## Transcript and UI Mapping
+
+- Manage `transcript` and `agentState` through `useState` plus `ai.on(TRANSCRIPT_UPDATED, ...)` and `ai.on(AGENT_STATE_CHANGED, ...)`.
+- The toolkit uses `uid="0"` as a sentinel for the local user's speech. Remap that value to `client.uid` before passing messages into `QuickstartTranscriptPanel`, or user speech renders on the agent side.
+- Include `INTERRUPTED` turns in `messageList`; filter only `IN_PROGRESS`.
+
+## Anti-Patterns / What NOT To Do
+
+- Do not call `client.leave()` manually; it breaks `useJoin` cleanup.
+- Do not call `localMicrophoneTrack.close()` manually; it breaks hook ownership.
+- Do not remove the `isReady` guard.
+- Do not set `reactStrictMode: false` as a workaround.
+- Do not replace `RtcTokenBuilder.buildTokenWithRtm` with an RTC-only token builder.
