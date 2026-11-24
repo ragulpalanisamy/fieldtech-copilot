@@ -1,8 +1,6 @@
-import { streamText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
-import { createChatCompletionsHandler } from '@/lib/chat-completions';
+import { NextRequest } from 'next/server';
+import { handleFieldTechChatCompletions } from '@/lib/chat-completions';
 
-export const POST = createChatCompletionsHandler({
-  createOpenAIClient: createOpenAI,
-  streamTextImpl: streamText,
-});
+export async function POST(request: NextRequest) {
+  return handleFieldTechChatCompletions(request);
+}
